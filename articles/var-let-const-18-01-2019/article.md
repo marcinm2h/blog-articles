@@ -1,10 +1,11 @@
 # var, let czy const? - jak deklarować zmienne w JavaScript?
-Specyfikacja ES6 wprowadziła nowe sposoby deklarowania zmiennych - obok słowa kluczowego `var` pojawiły się `let` i `const`.
+Specyfikacja ES6 wprowadziła nowe sposoby deklarowania zmiennych - obok słowa kluczowego `var` pojawiły się dwa nowe: `let` i `const`.
 
-Ich działanie jest nieco inne niż `var`, a do tego różni się między sobą.
+Ich działanie jest nieco inne niż `var`, a do tego różnią się między sobą.
+
 Po co nam aż dwa nowe słowa kluczowe? Którego z nich powinniśmy używać?
 
-Najpierw zacznijmy od przypomnienia sobie jak działa `var`.
+O tym za chwilę. Najpierw zacznijmy od przypomnienia sobie jak działa `var`.
 
 ## Scope
 Jaki jest zasięg zmiennych w JavaScript?
@@ -26,16 +27,18 @@ function increment(state = 0) {
 }
 ```
 ## Co się stało?
-Mimo deklarowania zmiennej wewnątrz bloku `if` nadpisała ona zmienną zadeklarowaną na samym początku funkcji.
+Mimo deklarowania `answer` wewnątrz bloku `if` nadpisała `answer` zadeklarowane na samym początku funkcji.
 Dzieje się tak dlatego, że **zmienne deklarowane przez `var` mają zasięg funkcyjny**.
 
-Wewnątrz funkcji `increment` zmienna została utworzona raz - na górze funkcji.
-W bloku if (mimo użycia `var`) odwołujemy się do tej samej zmiennej
+Wewnątrz funkcji `increment`: `answer` zostało utworzone jedyie raz - na górze jej ciała.
+W bloku if (mimo użycia `var`) odwołujemy się wciąż do tej samej zmiennej.
 
 Jak widać nietrudno tu o błąd. 
 
 ## ES6 na ratunek
-Nowe sposoby deklarowania zmiennych powstały nie bez powodu. Jako, że wielu programistów przyzwyczajona jest do zasięgu blokowego - eliminuje on podobne do powyższego przykładu błędy.
+Nowe sposoby deklarowania zmiennych powstały nie bez powodu. Wielu programistów - zwłaszcza przychodząca z innych języków - przyzwyczajona jest do zasięgu blokowego.
+To zachowanie zostało zaimplementowane w ES6. **Zmienne deklarowane przez `const` i `let` mają zasięg blokowy``.
+Scope zmiennej wyznaczają wszyskie bloki między klamrami `{}` - w tym funkcja i blok `if`.
 
 Zamieńmy `var` na ich nowocześniejsze odpowiedniki:
 ```javascript
@@ -94,7 +97,7 @@ function testConst1() {
 
 ## Czym let różni się od const?
 OK, wiemy już w czym `let` i `const` są lepsze od `var`. Czym się zatem różnią od siebie?
-Bardzo proste - `let` można redeklarować (zmieniać wartość), a `const` nie:
+Bardzo proste - `let` można redeklarować (zmieniać wartość), a `const` (stałych) nie:
 ```javascript
   function testLet2() {
     let counter = 0;
