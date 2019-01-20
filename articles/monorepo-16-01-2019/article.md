@@ -1,20 +1,25 @@
 # Tworzymy monorepozytorium z yarn workspaces krok po kroku
 
-Pracując w dużym projekcie javascriptowym z czasem jak aplikacja rośnie możesz dojść do punktu w którym będziesz chciał podzielić ją na mniejsze części.
+Pracując w dużym projekcie JavaScriptowym z czasem jak aplikacja rośnie dojdziesz do miejsca w którym trudno będzie nad nią pracować zespołowo.
+Duży codebase warto podzielić na mniejsze aplikacje.
 
-Reactową aplikację oddzielić od backendu w express, podzielić duże api na mikroserwisy, czy wynieść reużywane funkcje pomocnicze jako bibliotekę.
+Reactowy front-end oddzielić od serwera express, podzielić duże api na mikroserwisy, czy wynieść reużywane funkcje pomocnicze jako bibliotekę.
 
 Aby nie tworzyć wielkiego ciężkiego w utrzymaniu monolitu kodu z pomocą przychodzi nam (nomen omen) **monorepozytorium**.
 Jest to połączenie wielu odseparowanych pakietów (aplikacji) w jednym repo.
 
-Zacznijmy od przykłądu aby wiedzieć z czym mamy do czynienia.
+Zacznijmy od przykłądu aby lepiej zrozumieć problem.
 
 ## Przykład
 Projekt zawiera Node'owy serwer wystawiający RESTowe api (pakiet **api**), aplikację kliencką (pakiet **front**), a oba korzystają z funkcji pomocniczych (pakiet **utils**).
 W ramach projektu chcemy mieć jedną konfigurację do przeprowadzania testów.
 
-`TODO: dodać diagram z rozrysowanym repo`
 
+```
+ -----                      -------                      -------
+| api | -- (importuje) --> | utils | <-- (importuje) -- | front |
+ -----                      -------                      -------
+```
 
 ## Yarn workspaces
 Na początku utwórzmy nowy projekt.
@@ -102,7 +107,8 @@ Example app listening on port 3000!
 ```
 Działa! 
 
-(Uwaga - jako, że moduły i tak zostaną [hoistowane do głównego folderu node_modules](https://yarnpkg.com/blog/2018/02/15/nohoist/) w innych pakietach [front, utils] możesz użyć express, ale zawsze dodawaj zależności jawnie w packages.json)
+(Uwaga! Express i tak zostanie [hoistowany do głównego folderu node_modules](https://yarnpkg.com/blog/2018/02/15/nohoist/). 
+W innych pakietach zadziała `import expres from 'express'`. Mimo to, dobrą praktyką jest jawne dodanie zależności w packages.json)
 
 ## DevDepedencies - wspólna konfiguracja eslint
 Prawdopodobnie wszystkie nasze pakiety będą wymagały testowania. Z tego powodu zależności deweloperskie dobrze będzie trzymać na głównym poziomie repozytorium.
