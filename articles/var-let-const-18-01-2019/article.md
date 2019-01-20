@@ -1,13 +1,15 @@
-# var, let czy const? - jak deklarować zmienne w JavaScript?
-Specyfikacja ES6 wprowadziła nowe sposoby deklarowania zmiennych - obok słowa kluczowego `var` pojawiły się dodatkowo `let` i `const`.
+---
+title: var, let czy const? - jak deklarować zmienne w JavaScript?
+date: '2019-01-18'
+---
 
+Specyfikacja ES6 wprowadziła nowe sposoby deklarowania zmiennych - obok słowa kluczowego `var` pojawiły się dodatkowo `let` i `const`.
 Ich działanie jest nieco inne niż `var`, a do tego różnią się między sobą.
 
 Po co nam aż dwa nowe słowa kluczowe? Którego z nich powinniśmy używać?
-
 O tym za chwilę. Najpierw zacznijmy od przypomnienia sobie jak działa `var`.
 
-## Zasięg `var`
+## Zasięg var
 Jaki jest zasięg zmiennych w JavaScript?
 Prześledźmy przykład:
 
@@ -30,9 +32,8 @@ Zmienna `answer` wewnątrz bloku `if` nadpisała `answer` zadeklarowane na samym
 
 Dzieje się tak dlatego, że **zmienne deklarowane przez `var` mają zasięg funkcyjny**.
 
-Wewnątrz funkcji `increment`: `answer` zostało utworzone jedynie raz - na górze jej ciała.
+Wewnątrz funkcji `increment` zmienna `answer` została utworzona jedynie raz - na górze jej ciała.
 W bloku if (mimo użycia `var`) odwołujemy się wciąż do tej samej zmiennej.
-
 Jak widać nietrudno tu o błąd. 
 
 ## ES6 na ratunek
@@ -59,10 +60,10 @@ function increment(state = 0) {
   console.log(answer); //1 (!)
 }
 ```
-Tym razem wynik zgodny jest z oczekiwaniem.
+Tym razem wynik zgodny jest z oczekiwaniem - w bloku `if` tworzona jest całkiem nowa zmienna o tej samej nazwie.
 
 ## Właściwości let i const
-Deklaracje zmiennych w ES6 mają jeszcze inne właściwości dla których warto wybierać je ponad `var`.
+Poza zasięgiem blokowym, `let` i `const` mają jeszcze kilka właściwości odróżniających je od `var`:
 
 - W bloku kodu nie można dwukrotnie zadeklarować zmiennej o tej samej nazwie:
 ```javascript
@@ -82,7 +83,7 @@ function testConst1() {
 ```javascript
 function testVar1() {
   console.log(hello); // undefined
-  var hello = 'hello';
+  var hello = 'hello'; // var zostaje hoistowany
 }
 ```
 
@@ -103,9 +104,9 @@ function testConst2() {
 }
 ```
 
-## Czym `let` różni się od `const`?
+## Czym let różni się od const?
 OK, wiemy już w czym `let` i `const` są lepsze od `var`. Czym zatem różnią się od siebie?
-Bardzo proste - `let` można redeklarować (zmieniać wartość), a `const` (stałych) nie:
+Bardzo proste - `let` można redeklarować, a `const` nie (są stałymi):
 ```javascript
   function testLet2() {
     let counter = 0;
@@ -129,15 +130,16 @@ function testConst3() {
 }
 ```
 
-## Więc w końcu: -`var`, `let` czy `const`?
+## Więc w końcu: -var, let czy const?
 Przede wszystkim pisząc kod ES6 porzuć całkowicie `var` - używanie go może jedynie powodować trudne do przewidzenia błędy (sprawdź popularne niegdyś zadanie rekrutacyjne: [setTimeout w pętli](https://wesbos.com/for-of-es6/)).
 
 Dobrą praktyką jest zawsze zaczynanie deklaracji zmiennej od `const`.
-Dopiero w momencie kiedy będziemy potrzebować ją zmienić - zmienić też jej deklarację na `let`.
-
-Z oczywistego powodu - licznik pętli zawsze ustawimy na let.
+Dopiero w momencie kiedy będziemy potrzebować ją zmienić - zmienić też jej deklarację na `let`
+(z oczywistego powodu - licznik pętli zawsze ustawimy na let).
 
 Jeśli chcesz bardziej doglębnie wejść w temat polecam 2gi rozdział książki [You Don't Know JS: ES6 & beyond](https://github.com/getify/You-Dont-Know-JS/blob/master/es6%20%26%20beyond/ch2.md#block-scoped-declarations).
+
+---
 
 ## tl;dr
 - pisząc kod ES6 nie używaj `var`

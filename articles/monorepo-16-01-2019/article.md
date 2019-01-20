@@ -1,4 +1,7 @@
-# Tworzymy monorepozytorium z yarn workspaces krok po kroku
+---
+title: Tworzymy monorepozytorium z yarn workspaces krok po kroku
+date: '2019-01-16'
+---
 
 Pracując w dużym projekcie JavaScriptowym z czasem jak aplikacja rośnie dojdziesz do miejsca w którym trudno będzie nad nią pracować zespołowo.
 Duży codebase warto podzielić na mniejsze aplikacje.
@@ -188,10 +191,3 @@ yarn lint #test, build etc.
 - pakiety monorepozytorium są uzależniane od siebie przez **własne package.json**
 - pakiety monorepozytorium są uzależniane od zewnętrznych pakietów node przez **własne package.json**
 -  do uruchamiania skryptów we wszystkich pakietach równocześnie używamy **yarn workspaces run**
-
----
-## Tagi //FIXME - przerobić na format gatsbyjs
-
-- monorepo
-- yarn workspaces
-
