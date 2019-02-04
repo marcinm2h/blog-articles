@@ -4,9 +4,8 @@ date: '2019-01-18'
 ---
 
 Specyfikacja ES6 wprowadziła nowe sposoby deklarowania zmiennych - obok słowa kluczowego `var` pojawiły się dodatkowo `let` i `const`.
-Ich działanie jest nieco inne niż `var`, a do tego różnią się między sobą.
 
-Po co nam aż dwa nowe słowa kluczowe? Którego z nich powinniśmy używać?
+Po co nam aż dwa nowe słowa kluczowe i którego z nich powinniśmy używać?
 O tym za chwilę. Najpierw zacznijmy od przypomnienia sobie jak działa `var`.
 
 ## Zasięg var
