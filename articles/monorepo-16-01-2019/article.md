@@ -4,9 +4,7 @@ date: '2019-01-16'
 ---
 
 Pracując w dużym projekcie JavaScriptowym z czasem jak aplikacja rośnie dojdziesz do miejsca w którym trudno będzie nad nią pracować zespołowo.
-Duży codebase warto podzielić na mniejsze aplikacje.
-
-Reactowy front-end oddzielić od serwera express, podzielić duże api na mikroserwisy, czy wynieść reużywane funkcje pomocnicze jako bibliotekę.
+Duży codebase warto podzielić na mniejsze aplikacje - reactowy front-end oddzielić od serwera express, podzielić duże api na mikroserwisy, czy wynieść reużywane funkcje pomocnicze jako bibliotekę.
 
 Aby nie tworzyć wielkiego ciężkiego w utrzymaniu monolitu kodu z pomocą przychodzi nam (nomen omen) **monorepozytorium**.
 Jest to połączenie wielu odseparowanych pakietów (aplikacji) w jednym repo.
@@ -15,8 +13,6 @@ Zacznijmy od przykłądu aby lepiej zrozumieć problem.
 
 ## Przykład
 Projekt zawiera Node'owy serwer wystawiający RESTowe api (pakiet **api**), aplikację kliencką (pakiet **front**), a oba korzystają z funkcji pomocniczych (pakiet **utils**).
-W ramach projektu chcemy mieć jedną konfigurację do przeprowadzania testów.
-
 
 ```
  -----                      -------                      -------
@@ -24,8 +20,10 @@ W ramach projektu chcemy mieć jedną konfigurację do przeprowadzania testów.
  -----                      -------                      -------
 ```
 
+W ramach projektu chcemy mieć jedną konfigurację do uruchamiania skryptów (np. konfigurację testów jednostkowych).
+
 ## Yarn workspaces
-Na początku utwórzmy nowy projekt.
+Na początku utwórzmy nowy projekt:
 ```bash
 mkdir app && cd app
 yarn init -y
@@ -36,7 +34,7 @@ Aby podzielić go na pakiety użyjemy [yarn workspaces](https://yarnpkg.com/lang
   "private": true,
   "workspaces": ["packages/*"]
 ```
-\- folder packages będzie katalogiem na pakiety aplikacji (workspace'y).
+(folder `packages` będzie katalogiem na pakiety aplikacji)
 
 Następnie utwórzmy powyższe pakiety:
 ```bash
@@ -45,24 +43,35 @@ yarn init -y
 ```
 oraz w ten sam sposób dla **front** i **utils**.
 
-W tym momencie struktura plików powinna wyglądać tak:
+```bash
+mkdir -p packages/front && cd packages/front
+yarn init -y
 ```
-|-- package.json      //główny package.json - tu będziemy umieszczać reużywalne dev depedency (np. eslint)
-`-- packages      //folder pakietów (skonfigurowany w głównym package.json)
+```bash
+mkdir -p packages/utils && cd packages/utils
+yarn init -y
+```
+
+W tym momencie struktura plików powinna wyglądać następująco:
+```
+|-- package.json      // główny package.json - tu będziemy umieszczać reużywalne dev depedency (np. eslint)
+`-- packages      // folder pakietów (skonfigurowany w głównym package.json)
     |-- api
-    |   `-- package.json      //package.json pakietu api
+    |   `-- package.json      // package.json pakietu api
     |-- front
-    |   `-- package.json      //package.json pakietu front
+    |   `-- package.json      // package.json pakietu front
     `-- utils
         `-- package.json      //package.json pakietu utils
 ```
+Zgodnie z założeniem utworzyliśmy 3 pakiety aplikacji. Teraz pozostaje ustalić zależności pomiędzy nimi jak na grafie powyżej. 
+
 ## Utils
 Przetestujmy jak yarn radzi sobie z zależnościami między pakietami.
-W pakiecie **utils** utwórzmy funkcję: 
+W pakiecie **utils** utwórzmy funkcję:
 ```javascript
 //packages/utils/index.js
 function objectKeys(object) {
-  return Object.keys(object);
+  return Object.keys(object); // docelowo polyfill Object.keys 
 }
 
 module.exports = { objectKeys };
@@ -70,7 +79,8 @@ module.exports = { objectKeys };
  z której skorzystamy w **api** i **front**. W tym celu musimy dodać **utils** jako ich depedency:
  
  ```json
- //w packages/api/package.json i packages/front/package.json
+ // w packages/api/package.json
+ // i packages/front/package.json
   "depedencies": {
     "utils": "1.0.0"
   }
@@ -84,34 +94,45 @@ yarn install
 
 Teraz przetestujmy czy z pakietu api mamy dostęp do utils:
 ```javascript
-//packages/api/index.js
+// packages/api/index.js
 const { objectKeys } = require('utils');
 console.log(objectKeys({ a: 'a' }));
 ```
-Taki plik uruchamiam node i poprawnie loguje mi:
+Taki plik uruchamiamy node i poprawnie loguje:
 ```bash
 $ node index.js 
 [ 'a' ]
-``` 
-Tego samego efektu spodziewam się uruchamiając taki plik w pakiecie **front**.
+```
 
-Udało nam się więc utworzyć lokalne pakiety wewnątrz jednego repozytorium i uzależnić je od siebie.
+Udało nam się więc utworzyć lokalne pakiety wewnątrz jednego repozytorium i uzależnić je między sobą.
 
-## Depedencies - zewnętrzne zależności
-Gdzie teraz trzymać zewnętrzne zależności? W naszym przykładzie api będzie wystawione przez express, więc dodajmy tę zależność wyłącznie dla pakietu **api**.
+## Zewnętrzne zależności
+Gdzie teraz trzymać zewnętrzne zależności? W naszym przykładzie api będzie wystawione przez express. Dodajmy [pakiet](https://www.npmjs.com/package/express) jako zależność **api**.
 ```bash
 cd packages/api
 yarn add express
 ```
-Teraz przetestujmy serwer przykładem z https://expressjs.com/en/starter/hello-world.html.
+Teraz przetestujmy serwer przykładem skopiowanym z z https://expressjs.com/en/starter/hello-world.html:
+
+```javascript
+const express = require('express')
+const app = express()
+const port = 3000
+
+app.get('/', (req, res) => res.send('Hello World!'))
+
+app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+```
+
 ```bash
 $ node server.js 
 Example app listening on port 3000!
 ```
 Działa! 
 
-(Uwaga! Express i tak zostanie [hoistowany do głównego folderu node_modules](https://yarnpkg.com/blog/2018/02/15/nohoist/). 
-W innych pakietach zadziała `import expres from 'express'`. Mimo to, dobrą praktyką jest jawne dodanie zależności w packages.json)
+Uwaga! Express i tak zostanie [hoistowany do głównego folderu node_modules](https://yarnpkg.com/blog/2018/02/15/nohoist/) - pliki fizycznie będą na poziomie `node_modules` całej aplikacji.
+
+Oznacza to, że w innych pakietach (**utils** i **front**) express będzie widoczny. Dobrą praktyką jest jawne dodanie zależności w packages.json
 
 ## DevDepedencies - wspólna konfiguracja eslint
 Prawdopodobnie wszystkie nasze pakiety będą wymagały testowania. Z tego powodu zależności deweloperskie dobrze będzie trzymać na głównym poziomie repozytorium.
@@ -119,7 +140,7 @@ Zainstalujmy więc dla przykładu eslint.
 W tym celu w głównym katalogu wywołaj:
 ```bash
 yarn add --dev -W eslint
-# flaga '-W' pozwala na instalację zależności w głownym katalogu  
+# flaga '-W' pozwala na instalację zależności w głownym katalogu workspace
 ```
 Komenda ta doda nam do głównego package.json pole:
 ```json
@@ -188,6 +209,6 @@ yarn lint #test, build etc.
 - monorepozytotium pozwala podzielić projekt na mniejsze pakiety
 - do tworzenia monorepo wystarczy yarn z [yarn workspaces](https://yarnpkg.com/lang/en/docs/workspaces/)
 - **package.json w głównym katalogu** służy do zarządzania zależnościami deweloperskimi (np. eslint) i tam też trzymana jest ich konfiguracja
-- pakiety monorepozytorium są uzależniane od siebie przez **własne package.json**
-- pakiety monorepozytorium są uzależniane od zewnętrznych pakietów node przez **własne package.json**
+- pakiety monorepozytorium są uzależniane od siebie przez **package.json na poziomie pakietu**
+- pakiety monorepozytorium są uzależniane od zewnętrznych pakietów node przez **package.json na poziomie pakietu**
 -  do uruchamiania skryptów we wszystkich pakietach równocześnie używamy **yarn workspaces run**
