@@ -78,15 +78,15 @@ function testConst1() {
 }
 ```
 
-- Zmienne te w odróżnieniu od `var` nie są też hoistowane:
+- Zmienne te w odróżnieniu od `var` nie są inicjalizowane:
 ```javascript
 function testVar1() {
-  console.log(hello); // undefined
-  var hello = 'hello'; // var zostaje hoistowany
+  console.log(hello); // undefined - zmienna hello została zainicjalizowana
+  var hello = 'hello';
 }
 ```
 
-Zmienna `hello` została hoistowana - przeniesiona na samą górę. Przykład jest równoznaczny z zapisem:
+Zmienna `hello` zainicjalizowana wartością `undefined`. Przykład jest równoznaczny z zapisem:
 ```javascript
 function testVar2() {
   var hello = undefined;
